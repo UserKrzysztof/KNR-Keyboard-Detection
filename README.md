@@ -39,7 +39,7 @@ KNR-Keyboard-Detection
     │   pytorch_knr.yml # są w nim wypisane paczki
 ```
 
-## Jak wygenetować dane?
+## Jak wygenerować dane?
 1. Uruchom jeden z plików ```.blend```
 2. W zakładce Scripting powinien się pojawić skryt ```generating_data_cope.py```
 3. Zmień wartość zmiennej ```WORK_DIR``` na ścieżkę do foledru objemującą plik ```.blend```
