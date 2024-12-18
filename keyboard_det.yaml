@@ -1,0 +1,15 @@
+name: keyboard_det
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.13
+  - pip
+  - pytorch
+  - torchvision
+  - matplotlib
+  - scikit-learn
+  - imageio
+  - tqdm
+  - pillow
+  - seaborn
