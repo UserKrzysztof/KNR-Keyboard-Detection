@@ -117,11 +117,10 @@ class KeyFinder:
                 student_resid = influence.resid_studentized_external
                 leverage = influence.hat_matrix_diag
                 
-                # Heuristics for outliers and influential points
-                outlier_mask = np.abs(student_resid) > 2  # Standard threshold for outliers
-                influence_mask = leverage > (2 * np.mean(leverage))  # High leverage points
+                outlier_mask = np.abs(student_resid) > 2  
+                influence_mask = leverage > (2 * np.mean(leverage))  
                 
-                return ~(outlier_mask | influence_mask)  # Return mask of non-outliers
+                return ~(outlier_mask | influence_mask)  
             
             mask_x = compute_outliers(X, Y)
             mask_y = compute_outliers(Y.reshape(-1, 1), X.flatten())
