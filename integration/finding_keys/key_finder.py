@@ -154,7 +154,7 @@ class KeyFinder:
             indices = np.where(final_mask)[0]
             self._props = [self._props[i] for i in indices]
         
-        self._clear_centers_using_rows()
+        #self._clear_centers_using_rows()
 
         return self.centers
 
