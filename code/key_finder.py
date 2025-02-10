@@ -71,6 +71,7 @@ class KeyFinder:
             self._props.append(props)
 
         self.centers = np.array(centroids)
+        print(self.centers.shape)
         return self.centers
     
     def find_space(self):
@@ -110,6 +111,7 @@ class KeyFinder:
             #indices = np.where(cluster_labels != -1)[0]
             #self._props = [self._props[i] for i in indices]
             X, Y = self.centers[:, 0].reshape(-1, 1), self.centers[:, 1]
+            print(X,Y)
 
             def compute_outliers(X, Y):
                 model = sm.OLS(Y, sm.add_constant(X)).fit()

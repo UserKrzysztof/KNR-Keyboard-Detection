@@ -88,15 +88,38 @@ class KeyFinder:
 
         self.space_coords = space_coords
         return self.centers
+    
+    def _clear_centers_using_rows(self, centers_in = None, modifier = 100, min_max= (11,17)):
+        if centers_in is None:
+            centers = self.centers
+        else:
+            centers = centers_in
 
+        x_coords = centers[:,0]
+        y_coords = centers[:,1]
+
+        X = pd.DataFrame({"0": x_coords, "1":y_coords})
+        X["1"] = X["1"]*modifier
+
+        m = HDBSCAN(min_cluster_size=min_max[0], max_cluster_size=min_max[1])
+        m.fit(X)
+
+        cluster_labels = m.labels_
+
+        centers = centers[cluster_labels != -1]
+        indices = np.where(cluster_labels != -1)[0]
+
+        if centers_in is None:
+            self.centers = centers
+            self._props = [self._props[i] for i in indices]
+
+        return centers
 
     def clear_centers(self):
         assert len(self.centers) > 0
 
-        print("ELO")
         print(self.use_gauss)
         if self.use_gauss == True:
-            print("ELO2")
             gmm = GaussianMixture(n_components=1)
             gmm.fit(self.centers)
             probabilities = gmm.predict_proba(self.centers)[:, 0]
@@ -109,6 +132,7 @@ class KeyFinder:
             #self.centers = self.centers[cluster_labels != -1]
             #indices = np.where(cluster_labels != -1)[0]
             #self._props = [self._props[i] for i in indices]
+
             X, Y = self.centers[:, 0].reshape(-1, 1), self.centers[:, 1]
 
             def compute_outliers(X, Y):
@@ -129,6 +153,8 @@ class KeyFinder:
             self.centers = self.centers[final_mask]
             indices = np.where(final_mask)[0]
             self._props = [self._props[i] for i in indices]
+        
+        self._clear_centers_using_rows()
 
         return self.centers
 
@@ -158,6 +184,12 @@ class KeyFinder:
             np.min(self.centers_base2[:,1]),
             np.max(self.centers_base2[:,1]),
         ]
+
+        print(np.squeeze(np.asarray(self.centers_base2)).shape)
+        #self.centers_base2 = self._clear_centers_using_rows(np.squeeze(np.asarray(self.centers_base2)), 
+        #                                                    modifier=1,
+        #                                                    min_max=[5,90])
+        self.centers_base2 = np.squeeze(np.asarray(self.centers_base2))
         return self.centers_base2
 
     def assign_keys(self):
@@ -171,8 +203,8 @@ class KeyFinder:
         idx_to_pop = []
         for i in range(coords.shape[0]):
             distance, idx = self.base_kdtree.query(coords[i,:])
-            distance = distance[0]
-            idx = idx[0]
+            distance = distance
+            idx = idx
             key = keys[idx]
             idx_to_pop.append(idx)
 
