@@ -110,6 +110,7 @@ while True:
 
         print("Evaluating keys positions")
         try:
+            saved_frame = frame.copy()
             letters = kf.find(keys)
             for key, value in letters.items():
                 x, y = kf.original_coords(key, value, frame)
@@ -136,13 +137,21 @@ while True:
             for i in range(60):
                 out.write(frame)
 
+            frame = saved_frame
+            cv2.putText(frame, f"Writing: {SENTENCE}", (30,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+
+            cv2.imshow('Camera', frame)
+            time.sleep(2)
+            for i in range(40):
+                out.write(frame)
+
             for key in SENTENCE:
                 value = letters.get(key, None) 
                 if value is None:
                     print(f"Key {key} wasnt found")
                     continue
                 x, y = kf.original_coords(key, value, frame)
-                cv2.circle(frame, (int(x), int(y)), radius=5, color=(0, 255, 0), thickness=-1) 
+                cv2.circle(frame, (int(x), int(y)), radius=5, color=(0, 0, 255), thickness=-1) 
                 cv2.imshow('Camera', frame)
                 time.sleep(2)
                 for i in range(40):
