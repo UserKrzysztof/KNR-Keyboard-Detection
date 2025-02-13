@@ -7,6 +7,8 @@ import mask_finder
 import key_finder
 from matplotlib import pyplot
 
+SENTENCE = "HAL-062"
+
 os.chdir("/Users/krzysztof/machine_learning/object_detection/repo_january/KNR-Keyboard-Detection/node")
 
 #Setup models
@@ -128,6 +130,24 @@ while True:
                 
                 cv2.rectangle(frame, (bg_x1, bg_y1), (bg_x2, bg_y2), (255, 255, 255), thickness=-1)
                 cv2.putText(frame, text, (bg_x1, bg_y2 - 5), font, font_scale, (0, 0, 0), thickness, cv2.LINE_AA)  # Black text
+
+            cv2.imshow('Camera', frame)
+            time.sleep(3)
+            for i in range(60):
+                out.write(frame)
+
+            for key in SENTENCE:
+                value = letters.get(key, None) 
+                if value is None:
+                    print(f"Key {key} wasnt found")
+                    continue
+                x, y = kf.original_coords(key, value, frame)
+                cv2.circle(frame, (int(x), int(y)), radius=5, color=(0, 255, 0), thickness=-1) 
+                cv2.imshow('Camera', frame)
+                time.sleep(2)
+                for i in range(40):
+                    out.write(frame)
+
         except Exception as e:
             print("An error ocured")
             print(e)
