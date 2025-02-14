@@ -4,3 +4,5 @@
 *.avi
 *.pth
 *.mov
+*.mp4
+**.venv

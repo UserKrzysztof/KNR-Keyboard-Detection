@@ -7,12 +7,14 @@ import mask_finder
 import key_finder
 from matplotlib import pyplot
 
+CAMERA_OR_FILE = "input.mp4" #0
+
 SENTENCE = "HAL-062"
 
-os.chdir("/Users/krzysztof/machine_learning/object_detection/repo_january/KNR-Keyboard-Detection/node")
+os.chdir("/home/krzysztof/machine_learning/keyboard_detection/KNR-Keyboard-Detection/node")
 
 #Setup models
-mf = mask_finder.MaskFinder(key_det_model_path=os.path.join("models","key_detection_model (1).pth"))
+mf = mask_finder.MaskFinder()#key_det_model_path=os.path.join("models","key_detection_model (1).pth"))
 key_det_model = mf.key_det_model 
 keyboard_bbox_model = mf.keyboard_bbox_model
 processor = mf.processor 
@@ -23,7 +25,7 @@ device = mf.device
 
 kf = key_finder.KeyFinder(min_keys=50, 
                            probability_threshold=0.8,
-                           min_key_size=200,
+                           min_key_size=1500,
                            key_displacement_distance=5e-2,
                            input_missing_keys=False,
                            use_gauss=False,
@@ -33,13 +35,13 @@ kf = key_finder.KeyFinder(min_keys=50,
                            cluster_epsilon=np.inf)
 
 # Open the default camera
-cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture(CAMERA_OR_FILE)
 
 # Get the default frame width and height
 frame_width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
 frame_height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
 out = cv2.VideoWriter()
 out.open('output.avi', fourcc, 20.0, (frame_width, frame_height))
 
