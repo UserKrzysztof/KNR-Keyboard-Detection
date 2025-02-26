@@ -7,14 +7,14 @@ import mask_finder
 import key_finder
 from matplotlib import pyplot
 
-CAMERA_OR_FILE = 1#"input.mp4" #1
+CAMERA_OR_FILE = "input.mp4" #0
 
 SENTENCE = "HAL-062"
 
-os.chdir('C:\\Users\\48602\\studia\\knr_repos\\KNR-Keyboard-Detection\\node')
+os.chdir("/home/krzysztof/machine_learning/keyboard_detection/KNR-Keyboard-Detection/node")
 
 #Setup models
-mf = mask_finder.MaskFinder(key_det_model_path=os.path.join("models","key_detection_model (1).pth"))
+mf = mask_finder.MaskFinder()#key_det_model_path=os.path.join("models","key_detection_model (1).pth"))
 key_det_model = mf.key_det_model 
 keyboard_bbox_model = mf.keyboard_bbox_model
 processor = mf.processor 
@@ -25,8 +25,8 @@ device = mf.device
 
 kf = key_finder.KeyFinder(min_keys=50, 
                            probability_threshold=0.8,
-                           min_key_size=200,
-                           key_displacement_distance=1e-2,
+                           min_key_size=1500,
+                           key_displacement_distance=5e-2,
                            input_missing_keys=False,
                            use_gauss=False,
                            max_cluster_size=None,
@@ -36,8 +36,6 @@ kf = key_finder.KeyFinder(min_keys=50,
 
 # Open the default camera
 cam = cv2.VideoCapture(CAMERA_OR_FILE)
-cam.set(cv2.CAP_PROP_FRAME_WIDTH, 2048*2)
-cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
 # Get the default frame width and height
 frame_width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -45,7 +43,7 @@ frame_height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
 out = cv2.VideoWriter()
-out.open('output.avi', fourcc, 30.0, (int(frame_width/2), frame_height))
+out.open('output.avi', fourcc, 20.0, (frame_width, frame_height))
 
 bbox = None
 timer = None
@@ -55,8 +53,6 @@ while True:
     if not ret:
         print("Failed to grab frame. Exiting...")
         break  # Exit if camera fails
-
-    frame = np.split(frame, 2, axis=1)[0]
 
     if bbox is not None:
         print("Waiting 5 seconds before re-evaluating bbox...")
@@ -99,30 +95,12 @@ while True:
         print("Detecting keys")
         patches = mask_finder.transform_image(frame, bbox, patch_size, step)
         mask = mask_finder.mask_from_patches(patches, key_det_model, processor, input_points, patch_size, step, device)
-        binary_mask = (mask > 0).astype(np.uint8)*255
-
-        num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(binary_mask, connectivity=8)
-
-        min_area = 150
-
-        filtered_mask = np.zeros_like(binary_mask)
-
-        for i in range(1, num_labels):
-            if stats[i, cv2.CC_STAT_AREA] >= min_area:
-                filtered_mask[labels == i] = 255
-        mask = filtered_mask
-
-        
         bbox_im = mask_finder.bbox_img(frame, bbox)
-        cv2.imshow("maska", mask)
+
         print("Mask Shape:", mask.shape)
         print("BBox Image Shape:", bbox_im.shape)
 
-
         combined_mask = mask_finder.combine_mask(bbox_im, mask)
-        print(combined_mask.shape)
-  
-
 
         frame, overlay = utils.get_frame_overlay(bbox, combined_mask, frame)
 
