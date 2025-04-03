@@ -17,6 +17,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+import cv2
+
+MIN_AREA = 150
 
 def plot_3d_points(output):
     """
@@ -112,7 +115,37 @@ class Detector(Node):
             mask = mask_finder.mask_from_patches(patches, self.key_det_model, self.processor, self.input_points, self.patch_size, self.step, self.device)
             bbox_im = mask_finder.bbox_img(img, bbox)
 
+            # Display the mask and wait for user input
+            cv2.imshow("Mask", mask)
+            cv2.waitKey(0)  # Wait for a key press to proceed
+            cv2.destroyAllWindows()
+
+            binary_mask = (mask > 0).astype(np.uint8) * 255  # Strict thresholding
+
+            cv2.imshow("Binary Mask", binary_mask)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+            num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(binary_mask, connectivity=8)
+            min_area = MIN_AREA
+
+            filtered_mask = np.zeros_like(binary_mask)
+
+            for i in range(1, num_labels):
+                if stats[i, cv2.CC_STAT_AREA] >= min_area:
+                    filtered_mask[labels == i] = 255
+            mask = filtered_mask
+
+            cv2.imshow("Filtered Mask", filtered_mask)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
             combined_mask = mask_finder.combine_mask(bbox_im, mask)
+
+            # Display the mask and wait for user input
+            cv2.imshow("Filtered Mask", combined_mask)
+            cv2.waitKey(0)  # Wait for a key press to proceed
+            cv2.destroyAllWindows()
 
             img, overlay = utils.get_frame_overlay(bbox, combined_mask, img)
 
