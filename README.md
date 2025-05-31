@@ -1,18 +1,4 @@
 # KNR-Keyboard-Detection
-Cześć, w tym repo znajdzeisz wszystko co do tej pory zrobiłem w ramach projektu. W razie pytań pisz na dc ;)
-
-ps. Sorry za bałagan w kodzie. Nie przygotowałem się na to, że ktoś poza mną będzie tam zaglądał, bo w sumie do tej pory bardziej sprawdzałem różne rozwiązania niż tworzyłem finalną wersję.
-
-> [!NOTE]
-> Do odpalenia plików w repo będziesz potrzebował:
-> * Blender,
-> * środowiska Python z paczkami: scikit-learn, scikit-image, pytorch, numpy, pandas, pillow, matplotlib i seaborn.
-> 
-> Z pliku ```pytorch_knr.yml``` możesz sobie zaimportować środowisko ```conda```, ale możesz też sobie wszystko pobrać ręcznie, bo czasem z eksportami są problemy. Jak coś, to ja korzysatłem z wersji pytorch z CUDA 12.4, więc tam jest dość dużo paczek do pobranie. Spokojnie możesz sobie zainstlować pytorch na CPU, byleby działało.
-
-> [!NOTE]
-> Do wywołania notatników będziesz musiał wygenerować sobie dane.
-> Powinny być w nich zapisane moje wyniki.
 
 ## Mapa
 Poniżej mapa jak znaleźć najważniejsze pliki w repo
